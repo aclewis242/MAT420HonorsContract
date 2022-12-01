@@ -1,5 +1,4 @@
-import numpy as np
-import math
+from math import *
 
 R = 8.3145 # Ideal gas constant
 T = 273.15 # Standard temperature
@@ -17,8 +16,8 @@ class Cylinder:
         self.mc = mc
     
     def rho(self, x, y):
-        r = math.sqrt(x**2 + y**2)
-        return self.d0*math.exp(((self.w*r)**2)/(2*R*T))
+        r = sqrt(x**2 + y**2)
+        return self.d0*exp(((self.w*r)**2)/(2*R*T))
     
     def n(self, x, y):
         return self.mc*self.rho(x, y) + 1

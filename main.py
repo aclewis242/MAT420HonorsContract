@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as ptch
 import cyl
+from point import Point as pt
 from lib import *
+from numpy.linalg import norm
 
 if __name__ == "__main__":
     c = cyl.Cylinder()
@@ -25,7 +27,17 @@ if __name__ == "__main__":
     xp0 = -1; yp0 = 0
 
     ### ROTATING CYLINDER ###
-    ts = np.linspace(0, 100, 5000)
+    ts = np.linspace(0, 10, 100)
+    h = 1e-1
+    pts_base = np.mgrid[-c.R:c.R+h:h, -c.R:c.R+h:h].reshape(2,-1).T
+    pts = np.array([])
+    for p in pts_base:
+        if norm(p) < c.R:
+            pts = np.append(pts, pt(p[0], p[1]))
+    pts = makegrad(pts, c.n)
+    for p in pts:
+        # print(p.color)
+        plt.scatter(p.x, p.y, color=f'{p.color}')
     vs = intg(np.array([[x0, y0, xp0, yp0]]), np.array([dx, dy, dxp, dyp]), ts, c.R)
     plt.plot(vs[:,0], vs[:,1])
     plt.gca().add_artist(ptch.Circle((0, 0), c.R, fill=False))

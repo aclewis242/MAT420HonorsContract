@@ -1,5 +1,7 @@
 import numpy as np
+import matplotlib.colors as clrs
 from math import *
+from point import Point as pt
 
 def rk4old(d1f, d2f, xs, y, y1):
     # To use: d1f is 1st der., d2f is 2nd. y is initial value of f, y1 is initial value of d1f
@@ -60,4 +62,31 @@ def intg(vars: np.ndarray, funcs: np.ndarray, ts: np.ndarray, refl):
         l /= np.linalg.norm(l)
         [vars[-1,2], vars[-1,3]] = np.subtract(v, 2*np.dot(l, v)*l)
         vars, ts, refl = rk4(vars, funcs, ts, refl)
+    print("exited intg")
     return vars
+
+def makegrad(pts: np.ndarray, func, color: str='green'):
+    color_hex = clrs.CSS4_COLORS[color]
+    pts_grad = np.array([])
+    minN = -9e9999
+    maxN = -minN
+    for p in pts:
+        gradVal = func(p.x,p.y)
+        pts_grad = np.append(pts_grad, gradVal)
+        if gradVal > minN:
+            minN = gradVal
+        if gradVal < maxN:
+            maxN = gradVal
+    pts_grad = castHex(255*np.subtract(pts_grad, minN)/(maxN - minN))
+    for i in range(pts.size):
+        pts[i].color = color_hex + pts_grad[i]
+    print("exited grad")
+    return pts
+
+def castHex(arr: np.ndarray):
+    return [fillPlaces(hex(int(v)).replace('0x', '')) for v in arr]
+
+def fillPlaces(s: str):
+    if len(s) == 1:
+        return '0' + s
+    return s
