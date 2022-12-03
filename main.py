@@ -5,7 +5,6 @@ import cyl
 from point import Point as pt
 from lib import *
 from numpy.linalg import norm
-from PIL import Image
 
 if __name__ == "__main__":
     c = cyl.Cylinder()

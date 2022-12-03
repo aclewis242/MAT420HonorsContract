@@ -62,7 +62,6 @@ def intg(vars: np.ndarray, funcs: np.ndarray, ts: np.ndarray, refl):
         l /= np.linalg.norm(l)
         [vars[-1,2], vars[-1,3]] = np.subtract(v, 2*np.dot(l, v)*l)
         vars, ts, refl = rk4(vars, funcs, ts, refl)
-    print("exited intg")
     return vars
 
 def makegrad(pts: np.ndarray, func, color: str='black'):
