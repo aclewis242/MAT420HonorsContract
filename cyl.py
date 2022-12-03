@@ -17,7 +17,10 @@ class Cylinder:
     
     def rho(self, x, y):
         r = sqrt(x**2 + y**2)
-        return self.d0*exp(((self.w*r)**2)/(2*R*T))
+        if r <= self.R:
+            return self.d0*exp(((self.w*r)**2)/(2*R*T))
+        else:
+            return 0
     
     def n(self, x, y):
         return self.mc*self.rho(x, y) + 1

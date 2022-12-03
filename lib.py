@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.colors as clrs
 from math import *
-from point import Point as pt
+from PIL import ImageColor, Image
 
 def rk4old(d1f, d2f, xs, y, y1):
     # To use: d1f is 1st der., d2f is 2nd. y is initial value of f, y1 is initial value of d1f
@@ -65,23 +65,29 @@ def intg(vars: np.ndarray, funcs: np.ndarray, ts: np.ndarray, refl):
     print("exited intg")
     return vars
 
-def makegrad(pts: np.ndarray, func, color: str='green'):
+def makegrad(pts: np.ndarray, func, color: str='black'):
     color_hex = clrs.CSS4_COLORS[color]
     pts_grad = np.array([])
     minN = -9e9999
     maxN = -minN
+    maxX = 0
+    maxY = 0
     for p in pts:
         gradVal = func(p.x,p.y)
         pts_grad = np.append(pts_grad, gradVal)
-        if gradVal > minN:
-            minN = gradVal
-        if gradVal < maxN:
-            maxN = gradVal
+        if gradVal > minN: minN = gradVal
+        if gradVal < maxN: maxN = gradVal
+        if abs(p.x) > maxX: maxX = abs(p.x)
+        if abs(p.y) > maxY: maxY = abs(p.y)
     pts_grad = castHex(255*np.subtract(pts_grad, minN)/(maxN - minN))
+    dim = int(sqrt(np.size(pts_grad)))
+    img = Image.new('RGBA', (dim,dim), color='#ffffff00')
     for i in range(pts.size):
-        pts[i].color = color_hex + pts_grad[i]
-    print("exited grad")
-    return pts
+        p = pts[i]
+        imgX = int((p.x/maxX)*(dim-1)/2 + (dim-1)/2)
+        imgY = int((p.y/maxY)*(dim-1)/2 + (dim-1)/2)
+        img.putpixel((imgX,imgY), ImageColor.getrgb(color_hex+pts_grad[i]))
+    return img
 
 def castHex(arr: np.ndarray):
     return [fillPlaces(hex(int(v)).replace('0x', '')) for v in arr]
