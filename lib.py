@@ -3,7 +3,10 @@ import matplotlib.colors as clrs
 from math import *
 from PIL import ImageColor, Image
 
+# A library of various functions used by the simulation
+
 def rk4old(d1f, d2f, xs, y, y1):
+    # Outdated method for performing the 4th order Runge-Kutta algorithm (deprecated due to limited usability)
     # To use: d1f is 1st der., d2f is 2nd. y is initial value of f, y1 is initial value of d1f
     ys = np.array([y])
     y1s = np.array([y1])
@@ -24,6 +27,7 @@ def rk4old(d1f, d2f, xs, y, y1):
     return ys
 
 def rk4(vars: np.ndarray, funcs: np.ndarray, ts: np.ndarray, refl):
+    # Generalised RK4 method. Will work for any size-n system of first-order ODEs
     h = ts[1] - ts[0]
     while ts.any():
         t = ts[0]
@@ -55,8 +59,9 @@ def rk4(vars: np.ndarray, funcs: np.ndarray, ts: np.ndarray, refl):
     return vars, ts, 0
 
 def intg(vars: np.ndarray, funcs: np.ndarray, ts: np.ndarray, refl):
+    # Performs the integration of the EOM using RK4
     vars, ts, refl = rk4(vars, funcs, ts, refl)
-    while refl:
+    while refl and ts.size != 0:
         v = [vars[-1,2], vars[-1,3]]
         l = [vars[-1,0], vars[-1,1]]
         l /= np.linalg.norm(l)
@@ -65,17 +70,18 @@ def intg(vars: np.ndarray, funcs: np.ndarray, ts: np.ndarray, refl):
     return vars
 
 def makegrad(pts: np.ndarray, func, color: str='black'):
+    # Creates the color gradient used for the rotating cylinder
     color_hex = clrs.CSS4_COLORS[color]
     pts_grad = np.array([])
-    minN = -9e9999
+    minN = 9e9999
     maxN = -minN
     maxX = 0
     maxY = 0
     for p in pts:
         gradVal = func(p.x,p.y)
         pts_grad = np.append(pts_grad, gradVal)
-        if gradVal > minN: minN = gradVal
-        if gradVal < maxN: maxN = gradVal
+        if gradVal < minN: minN = gradVal
+        if gradVal > maxN: maxN = gradVal
         if abs(p.x) > maxX: maxX = abs(p.x)
         if abs(p.y) > maxY: maxY = abs(p.y)
     pts_grad = castHex(255*np.subtract(pts_grad, minN)/(maxN - minN))
@@ -88,10 +94,10 @@ def makegrad(pts: np.ndarray, func, color: str='black'):
         img.putpixel((imgX,imgY), ImageColor.getrgb(color_hex+pts_grad[i]))
     return img
 
-def castHex(arr: np.ndarray):
+def castHex(arr: np.ndarray): # Converts a decimal number to a hex string
     return [fillPlaces(hex(int(v)).replace('0x', '')) for v in arr]
 
-def fillPlaces(s: str):
+def fillPlaces(s: str): # Puts a single-digit number in two-digit format (i.e. 'F' -> '0F')
     if len(s) == 1:
         return '0' + s
     return s

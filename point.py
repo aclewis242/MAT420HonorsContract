@@ -1,5 +1,8 @@
 from math import *
 
+# A simple class describing a point in space, able to store a color at that point.
+# Used almost exclusively to create the color gradient for the cylinder.
+
 class Point:
     x = None
     y = None
