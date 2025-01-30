@@ -1,9 +1,9 @@
 from math import *
 
-# A simple class describing a point in space, able to store a color at that point.
-# Used almost exclusively to create the color gradient for the cylinder.
-
 class Point:
+    '''
+    A simple class describing a point in space, able to store a color at that point. Used almost exclusively to create the color gradient for the cylinder.
+    '''
     x = None
     y = None
     z = None
@@ -16,4 +16,7 @@ class Point:
         self.color = color
     
     def r(self):
+        '''
+        The point's distance from the vertical axis of the cylinder
+        '''
         return sqrt(self.x**2 + self.y**2)

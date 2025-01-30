@@ -13,13 +13,14 @@ if __name__ == "__main__":
     # Intended structure of 'vs': [var 1, var 2, ..., var 1 prime, var 2 prime, ...]
     def dx(t, vs): return vs[2]
     def dy(t, vs): return vs[3]
-    def dxp(t, vs, n=c.n, dnx=c.dnx, dny=c.dny):
+    # n, dn, etc. are defined in the Cylinder object & describe the variable index of refraction
+    def dxp(t, vs, n=c.n, dnx=c.dnx, dny=c.dny): # 2nd-order ODE, x component
         x = vs[0]
         y = vs[1]
         xp = vs[2]
         yp = vs[3]
         return -dnx(x,y)*xp**2/n(x,y) - 2*dny(x,y)*xp*yp/n(x,y) + dnx(x,y)*yp**2/n(x,y)
-    def dyp(t, vs, n=c.n, dnx=c.dnx, dny=c.dny):
+    def dyp(t, vs, n=c.n, dnx=c.dnx, dny=c.dny): # 2nd-order ODE, y component
         x = vs[0]
         y = vs[1]
         xp = vs[2]
@@ -58,8 +59,8 @@ if __name__ == "__main__":
     ts = ts_base
     n = c.n_const
     dn = c.dn_const
-    def dxpc(t, vs): return dxp(t, vs, n=n, dnx=dn, dny=dn)
-    def dypc(t, vs): return dyp(t, vs, n=n, dnx=dn, dny=dn)
+    def dxpc(t, vs): return dxp(t, vs, n=n, dnx=dn, dny=dn) # 2nd-order ODE with constant index of refraction
+    def dypc(t, vs): return dyp(t, vs, n=n, dnx=dn, dny=dn) # ''        ''                          ''
     vs = intg(np.array([[x0, y0, xp0, yp0]]), np.array([dx, dy, dxpc, dypc]), ts, c.R)
     plt.plot(vs[:,0], vs[:,1])
     plt.gca().add_artist(ptch.Circle((0, 0), c.R, fill=False))
@@ -79,8 +80,8 @@ if __name__ == "__main__":
     ts = np.linspace(0, 5, 100)
     n = c.n_simple
     dn = c.dn_simple
-    def dxps(t, vs): return dxp(t, vs, n=n, dnx=dn, dny=dn)
-    def dyps(t, vs): return dyp(t, vs, n=n, dnx=dn, dny=dn)
+    def dxps(t, vs): return dxp(t, vs, n=n, dnx=dn, dny=dn) # Applies the complex model of the cylinder to a 'simple' case of medium-to-medium refraction (no gradient)
+    def dyps(t, vs): return dyp(t, vs, n=n, dnx=dn, dny=dn) # Essentially a control case, to ensure its behavior works as expected
     vs = intg(np.array([[0, 2, 1, -1]]), np.array([dx, dy, dxps, dyps]), ts, 0)
     xs, ys = vs[:,0], vs[:,1]
     plt.plot(xs, ys)
